@@ -64,10 +64,10 @@ class Follow(db.Model):
                             primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow),
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     relationship_strength_id = db.Column(db.Integer,
-                                     db.ForeignKey('relationship_strength.id'))
+                                     db.ForeignKey('relationship_strengths.id'))
 
 class Conversation(db.Model):
     __tablename__ = 'conversations'
@@ -111,9 +111,6 @@ class User(UserMixin, db.Model):
                              lazy='dynamic',
                              cascade='all, delete-orphan')
 
-    relationship_strengths = db.relationship('RelationshipStrength',
-                                              backref=""
-                                            )
 
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
@@ -395,9 +392,9 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
     responses = db.relationship('Comment', backref='responses', lazy='dynamic')
-    gold_ranking = db.relationship('Comment', backref='gold', lazy='dynamic')
-    silver_ranking = db.relationship('Comment', backref='silver', lazy='dynamic')
-    bronze_ranking = db.relationship('Comment', backref='bronze', lazy='dynamic')
+    gold_ranking = db.relationship('Comment', backref='gold',lazy='dynamic')
+    silver_ranking = db.relationship('Comment', backref='silver',lazy='dynamic')
+    bronze_ranking = db.relationship('Comment', backref='bronze',lazy='dynamic')
 
 
     @staticmethod
@@ -434,8 +431,8 @@ class Ranking(db.Model):
     __tablename__ = 'rankings'
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    gold = db.Column(db.Integer, db.ForeignKey("comments.id")),
-    silver = db.Column(db.Integer, db.ForeignKey("comments.id")),
+    gold = db.Column(db.Integer, db.ForeignKey("comments.id"))
+    silver = db.Column(db.Integer, db.ForeignKey("comments.id"))
     bronze = db.Column(db.Integer, db.ForeignKey("comments.id"))
     
 
