@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -69,6 +69,21 @@ class Follow(db.Model):
     relationship_strength_id = db.Column(db.Integer,
                                      db.ForeignKey('relationship_strength.id'))
 
+class Conversation(db.Model):
+    __tablename__ = 'conversations'
+    id = db.Column(db.Integer, primary_key=True)
+    expiration_date = db.Column(db.Interval,
+        default=datetime.now() + timedelta(days=90),index=True)
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'))
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -91,8 +106,8 @@ class User(UserMixin, db.Model):
                              lazy='dynamic',
                              cascade='all, delete-orphan')
     receiver = db.relationship('Message',
-                             foreign_keys=[Message.recepient_id],
-                             backref=db.backref('recepient', lazy='joined'),
+                             foreign_keys=[Message.recipient_id],
+                             backref=db.backref('recipient', lazy='joined'),
                              lazy='dynamic',
                              cascade='all, delete-orphan')
 
@@ -417,7 +432,7 @@ db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 class Ranking(db.Model):
     __tablename__ = 'rankings'
-    id = db.Column(db.Integer, primary_key=True),
+    id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     gold = db.Column(db.Integer, db.ForeignKey("comments.id")),
     silver = db.Column(db.Integer, db.ForeignKey("comments.id")),
@@ -426,27 +441,13 @@ class Ranking(db.Model):
 
 class Response(db.Model):
     __tablename__ = 'responses'
-    id = db.Column(db.Integer, primary_key=True),
+    id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"))
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
 
-class Conversation(db.Model):
-    __tablename__ = 'conversations'
-    id = db.Column(db.Integer, primary_key=True),
-    expiration_date = db.Column(db.Interval,
-         default=datetime.now() + timedelta(days=90),index=True)
 
-class Message(db.Model):
-    __tablename__ = 'messages'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'))
 
 
 
