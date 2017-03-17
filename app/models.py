@@ -381,6 +381,24 @@ class Post(db.Model):
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
+class Response(db.Model):
+    __tablename__ = 'responses'
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"))
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+
+# gdrankg = 'Ranking', forekeys=[Ranking.gold], backref=db.backref('gold', lazy='joined')
+
+class Ranking(db.Model):
+    __tablename__ = 'rankings'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    gold = db.Column(db.Integer, db.ForeignKey("comments.id"))
+    silver = db.Column(db.Integer, db.ForeignKey("comments.id"))
+    bronze = db.Column(db.Integer, db.ForeignKey("comments.id"))
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -391,10 +409,8 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    responses = db.relationship('Comment', backref='responses', lazy='dynamic')
-    gold_ranking = db.relationship('Comment', backref='gold',lazy='dynamic')
-    silver_ranking = db.relationship('Comment', backref='silver',lazy='dynamic')
-    bronze_ranking = db.relationship('Comment', backref='bronze',lazy='dynamic')
+    response = db.relationship('Response', backref='comment', lazy='dynamic')
+    ranking_id = db.Column(db.Integer, db.ForeignKey('rankings.id'))
 
 
     @staticmethod
@@ -427,22 +443,8 @@ class Comment(db.Model):
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
-class Ranking(db.Model):
-    __tablename__ = 'rankings'
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    gold = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    silver = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    bronze = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    
 
-class Response(db.Model):
-    __tablename__ = 'responses'
-    id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
+
 
 
 
