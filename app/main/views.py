@@ -35,7 +35,7 @@ def server_shutdown():
 @main.route('/', methods=['GET', 'POST'])
 def index():
     form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
+    if current_user.is_authenticated and \
             form.validate_on_submit():
         post = Post(body=form.body.data,
                     author=current_user._get_current_object())
@@ -112,7 +112,6 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
 
-
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
@@ -155,7 +154,6 @@ def edit(id):
 
 @main.route('/follow/<username>')
 @login_required
-@permission_required(Permission.FOLLOW)
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -171,7 +169,6 @@ def follow(username):
 
 @main.route('/unfollow/<username>')
 @login_required
-@permission_required(Permission.FOLLOW)
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:

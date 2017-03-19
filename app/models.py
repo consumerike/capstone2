@@ -365,7 +365,7 @@ class Post(db.Model):
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True),
-            'comments': url_for('api.get_post_comments', id=self.id,
+            '`s': url_for('api.get_post_comments', id=self.id,
                                 _external=True),
             'comment_count': self.comments.count()
         }
@@ -410,7 +410,7 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
     response = db.relationship('Response', backref='comment', lazy='dynamic')
-    ranking_id = db.Column(db.Integer, db.ForeignKey('rankings.id'))
+    ranking_id = db.Column(db.Integer, db.ForeignKey('rankings.id'), nullable=True)
 
 
     @staticmethod
