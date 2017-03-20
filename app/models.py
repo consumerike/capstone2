@@ -399,7 +399,6 @@ class Ranking(db.Model):
     silver = db.Column(db.Integer, db.ForeignKey("comments.id"))
     bronze = db.Column(db.Integer, db.ForeignKey("comments.id"))
 
-
 class Comment(db.Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)

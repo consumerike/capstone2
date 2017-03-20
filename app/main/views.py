@@ -134,6 +134,14 @@ def post(id):
     return render_template('post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
 
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
+@login_required
+def rank(id):
+    comment = Comment.query.get_or_404(id)
+    rank = request.POST
+    
+
+
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
