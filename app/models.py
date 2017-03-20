@@ -124,8 +124,6 @@ class User(UserMixin, db.Model):
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
-    responses = db.relationship('Response', backref='author', lazy='dynamic')
-
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
@@ -332,6 +330,8 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    votes = db.relationship('Vote', backref='post', lazy='dynamic')
+    score = db.Column(db.Integer, default=0)
 
     @staticmethod
     def generate_fake(count=100):
@@ -378,26 +378,16 @@ class Post(db.Model):
             raise ValidationError('post does not have a body')
         return Post(body=body)
 
-
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
-class Response(db.Model):
-    __tablename__ = 'responses'
-    id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comment_id = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
 
-# gdrankg = 'Ranking', forekeys=[Ranking.gold], backref=db.backref('gold', lazy='joined')
 
-class Ranking(db.Model):
-    __tablename__ = 'rankings'
+class Vote(db.Model):
+    __tablename__ = 'votes'
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    gold = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    silver = db.Column(db.Integer, db.ForeignKey("comments.id"))
-    bronze = db.Column(db.Integer, db.ForeignKey("comments.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -408,8 +398,6 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
-    response = db.relationship('Response', backref='comment', lazy='dynamic')
-    ranking_id = db.Column(db.Integer, db.ForeignKey('rankings.id'), nullable=True)
 
 
     @staticmethod

@@ -21,15 +21,22 @@
                 <a href="{{ url_for('.edit', id=post.id) }}">
                     <span class="label label-primary">Edit</span>
                 </a>
-                {% elif current_user.is_administrator() %}
-                <a href="{{ url_for('.edit', id=post.id) }}">
-                    <span class="label label-danger">Edit [Admin]</span>
+                {% endif %}
+
+                <span class="label label-primary">{{post.score}}</span>
+
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('.upvote', id=post.id) }}">
+                    <span class="label label-primary">+</span>
                 </a>
                 {% endif %}
+                
+
               
                 <a href="{{ url_for('.post', id=post.id) }}#comments">
                     <span class="label label-primary">{{ post.comments.count() }} Comments</span>
                 </a>
+
             </div>
         </div>
     </li>

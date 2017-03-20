@@ -6,7 +6,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment
+from ..models import Permission, Role, User, Post, Comment, Vote
 from ..decorators import admin_required, permission_required
 
 
@@ -134,13 +134,15 @@ def post(id):
     return render_template('post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
 
-@main.route('/post/<int:id>', methods=['GET', 'POST'])
+@main.route('/index/<int:id>', methods=['GET', 'POST'])
 @login_required
-def rank(id):
-    comment = Comment.query.get_or_404(id)
-    rank = request.POST
-    
-
+def upvote(id):
+    post = Post.query.get_or_404(id)
+    post.score += 1
+    db.session.add(post)
+    flash('1up!')
+    return redirect(url_for('.index', id=post.id))
+    # return render_template('index.html', post=post)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
