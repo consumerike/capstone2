@@ -134,7 +134,7 @@ def post(id):
     return render_template('post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
 
-@main.route('/index/<int:id>', methods=['GET', 'POST'])
+@main.route('/up/<int:id>', methods=['GET', 'POST'])
 @login_required
 def upvote(id):
     post = Post.query.get_or_404(id)
@@ -142,7 +142,16 @@ def upvote(id):
     db.session.add(post)
     flash('1up!')
     return redirect(url_for('.index', id=post.id))
-    # return render_template('index.html', post=post)
+
+@main.route('/down/<int:id>', methods=['GET', 'POST'])
+@login_required
+def downvote(id):
+    post = Post.query.get_or_404(id)
+    post.score -= 1
+    db.session.add(post)
+    flash('poor form Jack!')
+    return redirect(url_for('.index', id=post.id))
+
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
