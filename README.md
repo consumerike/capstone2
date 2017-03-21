@@ -1,7 +1,10 @@
-Flasky
+Touchtock
 ======
 
-This repository contains the source code examples for my O'Reilly book [Flask Web Development](http://www.flaskbook.com).
+The goal of this project was to build a social networking application with 
+a focus of learning more about database even handling. The app uses the Python Flask micro framework and SqlAlchemy Object Relational Mapper.
 
-The commits and tags in this repository were carefully created to match the sequence in which concepts are presented in the book. Please read the section titled "How to Work with the Example Code" in the book's preface for instructions.
+Another goal of this project was to practice reading code (Miguel Grinberg from flaskbook) and being able to work with, understand, and extend an existing code base.
+
+
 
